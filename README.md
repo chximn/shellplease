@@ -23,8 +23,7 @@ shellplease.py -s carrier.sh
 #!/bin/sh
 # carrier.sh
 
-# script carrier should use a positional argument as payload
-something $0
+something $PAYLOAD
 ```
 
 ## Examples
@@ -84,7 +83,7 @@ optional arguments:
   -H HOST, --host HOST, --local-host HOST
                         local host (default: )
   -s CARRIER_SCRIPT, --carrier-script CARRIER_SCRIPT
-                        shell script that sends the payload to the target, it should use a positional parameter as payload
+                        shell script that sends the payload to the target, it should use a PAYLOAD env variable as payload
                         (default: )
   -c CARRIER_COMMAND, --carrier-command CARRIER_COMMAND
                         shell command that sends the payload to the target, it should use a PAYLOAD env variable as payload

